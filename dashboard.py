@@ -7,19 +7,18 @@ import streamlit as st
 st.set_page_config(page_title="Dashboard E-Commerce", layout="wide")
 
 st.title("📊 Dashboard Analisis E-Commerce")
-st.markdown("Analisis performa transaksi, kategori produk, dan segmentasi customer")
+st.markdown("Analisis performa transaksi dan kategori produk")
 
 # =========================
 # LOAD DATA
 # =========================
 @st.cache_data
 def load_data():
-    df = pd.read_csv('cleaned_data_sample.csv')
-    rfm = pd.read_csv('rfm_data.csv')
-    return df, rfm
+    df = pd.read_csv('main_data.csv')
+    return df
 
 try:
-    df, rfm = load_data()
+    df = load_data()
 except:
     st.error("❌ File tidak ditemukan. Pastikan CSV ada di folder yang sama.")
     st.stop()
@@ -64,7 +63,6 @@ col3.metric("Total Revenue", f"{total_revenue:,.0f}")
 st.subheader("📈 Trend Transaksi Bulanan")
 
 monthly = df.groupby('Month').size()
-
 st.line_chart(monthly)
 
 # =========================
@@ -73,17 +71,7 @@ st.line_chart(monthly)
 st.subheader("🏆 Top 10 Kategori Produk")
 
 top_category = df['product_category_name_english'].value_counts().head(10)
-
 st.bar_chart(top_category)
-
-# =========================
-# CUSTOMER SEGMENT
-# =========================
-st.subheader("👥 Segmentasi Customer (RFM)")
-
-segment = rfm['Segment'].value_counts()
-
-st.bar_chart(segment)
 
 # =========================
 # INSIGHT OTOMATIS
@@ -93,12 +81,10 @@ st.subheader("🧠 Insight")
 top_cat = top_category.idxmax()
 top_value = top_category.max()
 
-top_segment = segment.idxmax()
-
 st.markdown(f"""
 - 📦 Kategori paling populer adalah **{top_cat}** dengan {top_value} transaksi  
-- 👥 Mayoritas customer berada pada segment **{top_segment}**  
-- 💰 Total revenue mencapai **{total_revenue:,.0f}**
+- 💰 Total revenue mencapai **{total_revenue:,.0f}**  
+- 📊 Jumlah customer unik sebanyak **{total_customer}**
 """)
 
 # =========================
